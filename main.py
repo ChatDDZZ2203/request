@@ -1,48 +1,15 @@
-import os
-import asyncio
-
-# External modules
-import psycopg2
 import requests
-import telebot
-from quart import Quart
+import os
+from flask import Flask
+app = Flask(__name__)
 
-bot = telebot.TeleBot(os.environ["TELEGRAM_BOT_TOKEN"])
-app = Quart(__name__)
-connection = psycopg2.connect(os.environ["DB_LINK"])
-cur = connection.cursor()
+@app.before_request
+def send():
+    requests.post('https://myrepo2023.chatddzz.repl.co', 
+                  data={os.environ.get("PASS"): os.environ.get("IDENTIFICATOR")}
+                  )
+    return ""
 
-
-@app.route('/', methods=["HEAD"])
-async def index():
-    asyncio.create_task(me())
-    return 'OK'
-
-
-async def me():
-    cur.execute("""
-                SELECT ident, url, password FROM requests_data WHERE status = 'Ready'
-                """)
-    data = cur.fetchall()
-    for i in range(10):
-        final_string = ""
-        print(f"Sending {i + 1} Time")
-        for row in data:
-            ident, url, passw = row
-            try:
-                r = requests.post(url, data={passw: ident}, timeout=5)
-                final_string += f"Sent to\n{url}\n{passw}\n{r.text}\n\n"
-            except requests.ReadTimeout:
-                final_string += f"Read timeout on\n{url}\n{passw}\n\n"
-            await asyncio.sleep(1)
-        bot.send_message(chat_id=-1001968944787, message_thread_id=5279,
-                         text=final_string)
-        await asyncio.sleep(3)
-
-
-app.run(host='0.0.0.0', port=int(os.getenv("PORT", 3000)))
-
-
-
+app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 3000)))
 
 
