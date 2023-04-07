@@ -1,5 +1,7 @@
 requests
 quart
+pytelegrambotapi
+psycopg2
 
 
 
