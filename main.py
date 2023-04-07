@@ -9,7 +9,7 @@ from quart import Quart
 
 bot = telebot.TeleBot(os.environ["TELEGRAM_BOT_TOKEN"])
 app = Quart(__name__)
-connection = psycopg2.connect(os.environ["DB_LINK"])
+connection = psycopg2.connect(os.environ["DATABASE_URL"])
 cur = connection.cursor()
 
 
