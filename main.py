@@ -20,24 +20,29 @@ async def index():
 
 
 async def me():
-    cur.execute("""
-                SELECT ident, url, password FROM request_data WHERE status = 'Ready'
-                """)
-    data = cur.fetchall()
-    
-    for i in range(15):
-        final_string = ""
-        for row in data:
-            ident, url, passw = row
-            try:
-                r = requests.post(url, data={passw: ident}, timeout=4)
-                final_string += f"Sent to\n{url}\n{passw}\n{r.text}\n\n"
-            except requests.ReadTimeout:
-                final_string += f"Read timeout on\n{url}\n{passw}\n\n"
-            await asyncio.sleep(0.5)
+    try:
+        cur.execute("""
+                    SELECT ident, url, password FROM request_data WHERE status = 'Ready'
+                    """)
+        data = cur.fetchall()
+
+        for i in range(15):
+            final_string = ""
+            for row in data:
+                ident, url, password = row
+                try:
+                    r = requests.post(url, data={password: ident}, timeout=4)
+                    final_string += f"Sent to\n{url}\n{password}\n{r.text}\n\n"
+                except requests.ReadTimeout:
+                    final_string += f"Read timeout on\n{url}\n{password}\n\n"
+                await asyncio.sleep(0.5)
+            bot.send_message(chat_id=-1001968944787, message_thread_id=5279,
+                             text=f"{final_string}\n\nSent {i + 1} Time")
+            await asyncio.sleep(5)
+            
+    except Exception as e:
         bot.send_message(chat_id=-1001968944787, message_thread_id=5279,
-                         text=f"{final_string}\n\nSent {i + 1} Time")
-        await asyncio.sleep(5)
+                         text=f"Some error in me():\n{e}")
 
 
 app.run(host='0.0.0.0', port=int(os.getenv("PORT", 3000)))
